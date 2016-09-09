@@ -21,7 +21,7 @@ var rSlider, gSlider, bSlider, randomColorSlider;
 
 function setup() {
 	noStroke();
-	createCanvas(640, 480);
+	createCanvas(800, 600);
 
 	renderCircles();
 
