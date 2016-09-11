@@ -1,78 +1,71 @@
 
-var circle_size = 50;
-var circle_distance = 15;
-var random_offset= 0;
-var stagger_offset = true;
-
-
-var circle_r = 220;
-var circle_g = 140;
-var circle_b = 130;
-var circle_color_random = 20;
-
-var back_r = 60;
-var back_g = 140;
-var back_b = 165;
-
-var piece_rotation = 0;
-var whole_rotation = 0;
-
-var rSlider, gSlider, bSlider, randomColorSlider;
+var gui;
 
 function setup() {
 	noStroke();
-	createCanvas(800, 600);
+	createCanvas(windowWidth, windowHeight);
+  frameRate(5);
+
+  params = new patternParameters();
+  gui = new dat.GUI();
+  initGui();
 
 	renderCircles();
-
-	rSlider = createSlider(0, 255, 100);
-	rSlider.position(650, 20);
-	gSlider = createSlider(0, 255, 0);
-	gSlider.position(650, 40);
-	bSlider = createSlider(0, 255, 255);
-	bSlider.position(650, 60);
-	randomColorSlider = createSlider(0, 255, 45);
-	randomColorSlider.position(650, 80);  
-  pieceRotationSlider = createSlider(0, 255, 0);
-  pieceRotationSlider.position(650, 100);  
-  circleSizeSlider = createSlider(10, 300, 45);
-  circleSizeSlider.position(650, 120);  
 }
 
 function draw() 
 {
-	getUIState();
 	renderCircles();  
 }
 
-function getUIState()
+//Features to add
+// overlap
+// proper rotation
+// seamless output
+// size gradient
+// size randomness
+// speed improvement
+// custom shapes (stars, shamrocks, pumpkins and ghosts)
+// random eyes and ears on some circles
+// presets (UI already provides this)
+// Save
+var patternParameters = function()
 {
-	circle_r = rSlider.value();
-	circle_b = bSlider.value();
-	circle_g = gSlider.value();
-	circle_color_random = randomColorSlider.value();
-  piece_rotation = pieceRotationSlider.value();
-  circle_size = circleSizeSlider.value();
+  this.circle_size = 50;
+  this.circle_distance = 15;
+  this.position_offset= 0;
+  this.size_offset = 0;
+  this.stagger = true;
+
+  this.circle_color = [ 220, 140, 130 ]; // RGB array
+  this.color_offset = 0;
+
+  this.back_color = [ 60, 140, 165 ]; // RGB array
+
+  this.piece_rotation = 0;
+  this.whole_rotation = 0;
+
+  this.random_seed = 1000;
 }
 
 function renderCircles()
 {
-  background(back_r, back_g, back_b);
-  randomSeed(0);
+  background(params.back_color[0], params.back_color[1], params.back_color[2]);
+  randomSeed(params.random_seed);
   push();
-  rotate(whole_rotation);
-  for (i = 0; i <= int(width / (circle_size + circle_distance) + 1); i = i+1)
+  rotate(params.whole_rotation);
+  for (i = 0; i <= int(width / (params.circle_size + params.circle_distance) + 1); i = i+1)
   {
-    for (j = 0; j <= int(width / (circle_size + circle_distance) +1); j = j+1) 
+    for (j = 0; j <= int(width / (params.circle_size + params.circle_distance) +1); j = j+1) 
     {
       push();
-      fill (circle_r + random(-circle_color_random, circle_color_random), circle_g+ random(-circle_color_random, circle_color_random), circle_b+ random(-circle_color_random, circle_color_random));
-      var offset = (stagger_offset) ? (i % 2) : 0;
-      var vertical_offset = (stagger_offset) ? 0.866025: 1;
+      fill (params.circle_color[0] + random(-params.color_offset, params.color_offset), params.circle_color[1] + random(-params.color_offset, params.color_offset), params.circle_color[2]+ random(-params.color_offset, params.color_offset));
+      var offset = (params.stagger) ? (i % 2) : 0;
+      var vertical_offset = (params.stagger) ? 0.866025: 1;
       
-      translate((j - (offset/2.0)) * (circle_size + circle_distance)+ random(-random_offset, random_offset), i * (circle_size + (circle_distance)) * (vertical_offset) + random(-random_offset, random_offset));
-      rotate(piece_rotation);
-      star(0,0, circle_size/2.0, circle_size/4.0,5);
+      translate((j - (offset/2.0)) * (params.circle_size + params.circle_distance)+ random(-params.position_offset, params.position_offset), i * (params.circle_size + (params.circle_distance)) * (vertical_offset) + random(-params.position_offset, params.position_offset));
+      rotate(params.piece_rotation);
+      ellipse(0,0, params.circle_size/1.0, params.circle_size/1.0,5);
       
       pop();
     }
@@ -98,3 +91,20 @@ function star(x,  y,  radius1, radius2,npoints) {
   }
   endShape(CLOSE);
 }
+
+var initGui = function() {
+  var f1 = gui.addFolder('Pattern Parameters');
+  f1.add(params, 'circle_size',10,300);
+  f1.add(params, 'circle_distance',0,300);
+  f1.add(params, 'stagger'); 
+  
+  var f2 = gui.addFolder('Colors');  
+  f2.addColor(params, 'circle_color');  
+  f2.addColor(params, 'back_color');
+
+  var f3 = gui.addFolder('Randomness');  
+  f3.add(params, 'random_seed');
+  f3.add(params, 'size_offset', 0,1);
+  f3.add(params, 'position_offset',0,100);  
+  f3.add(params, 'color_offset',0,255); 
+};
