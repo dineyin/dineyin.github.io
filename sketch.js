@@ -15,7 +15,11 @@ function setup() {
 
 function draw() 
 {
-	renderCircles();  
+	renderCircles();
+  textSize(32);
+  fill(255, 255, 255);
+  //text(str(params.circle_color), 10, 30);
+  //text(str(params.back_color), 10, 90);
 }
 
 //Features to add
@@ -23,7 +27,6 @@ function draw()
 // proper rotation
 // seamless output
 // size gradient
-// size randomness
 // speed improvement
 // custom shapes (stars, shamrocks, pumpkins and ghosts)
 // random eyes and ears on some circles
@@ -32,24 +35,47 @@ function draw()
 var patternParameters = function()
 {
   this.circle_size = 50;
-  this.circle_distance = 15;
+  this.circle_distance = 50;
   this.position_offset= 0;
   this.size_offset = 0;
   this.stagger = true;
 
-  this.circle_color = [ 220, 140, 130 ]; // RGB array
+  this.circle_color = [ 220, 215, 190 ]; // RGB array
   this.color_offset = 0;
 
-  this.back_color = [ 60, 140, 165 ]; // RGB array
+  this.back_color = [ 165, 60, 60 ]; // RGB array
 
   this.piece_rotation = 0;
   this.whole_rotation = 0;
 
   this.random_seed = 1000;
+  this.save = function()
+  {
+    this.circle_size = 300;
+  }
 }
+
+//If the input is a color array then just return that, if it's not check that it's a string and unhex it
+function colorToColorArray(inputColor)
+{
+  if (Array.isArray(inputColor))
+  {
+    return inputColor;
+  }
+  else
+  {
+    inputColor = str(inputColor);
+    outputColor = [unhex(inputColor.substring(1, 2)), unhex(inputColor.substring(3, 4)),unhex(inputColor.substring(5, 6))];
+    return outputColor;
+  }
+}
+
+
 
 function renderCircles()
 {
+  params.back_color = colorToColorArray(params.back_color);
+  params.circle_color = colorToColorArray(params.circle_color);
   background(params.back_color[0], params.back_color[1], params.back_color[2]);
   randomSeed(params.random_seed);
   push();
@@ -65,15 +91,14 @@ function renderCircles()
       
       translate((j - (offset/2.0)) * (params.circle_size + params.circle_distance)+ random(-params.position_offset, params.position_offset), i * (params.circle_size + (params.circle_distance)) * (vertical_offset) + random(-params.position_offset, params.position_offset));
       rotate(params.piece_rotation);
-      ellipse(0,0, params.circle_size/1.0, params.circle_size/1.0,5);
+      var scaled_circle_size = Math.max(params.circle_size + random(-params.size_offset * params.circle_size, params.size_offset * params.circle_size) , 10);
+      ellipse(0,0, scaled_circle_size/1.0, scaled_circle_size/1.0,5);
       
       pop();
     }
   }
   pop();
 }
-
-
 
 
 
@@ -97,6 +122,7 @@ var initGui = function() {
   f1.add(params, 'circle_size',10,300);
   f1.add(params, 'circle_distance',0,300);
   f1.add(params, 'stagger'); 
+  f1.add(params, 'save'); 
   
   var f2 = gui.addFolder('Colors');  
   f2.addColor(params, 'circle_color');  
