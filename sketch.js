@@ -18,8 +18,8 @@ function draw()
 	renderCircles();
   textSize(32);
   fill(255, 255, 255);
-  //text(str(params.circle_color), 10, 30);
-  //text(str(params.back_color), 10, 90);
+  text(str(params.circle_color), 10, 30);
+  text(str(params.back_color), 10, 90);
 }
 
 //Features to add
@@ -40,10 +40,10 @@ var patternParameters = function()
   this.size_offset = 0;
   this.stagger = true;
 
-  this.circle_color = [ 220, 215, 190 ]; // RGB array
+  this.circle_color = '#dcd7be'; // RGB array
   this.color_offset = 0;
 
-  this.back_color = [ 165, 60, 60 ]; // RGB array
+  this.back_color = '#a53c3c'; // RGB array
 
   this.piece_rotation = 0;
   this.whole_rotation = 0;
@@ -74,9 +74,7 @@ function colorToColorArray(inputColor)
 
 function renderCircles()
 {
-  params.back_color = colorToColorArray(params.back_color);
-  params.circle_color = colorToColorArray(params.circle_color);
-  background(params.back_color[0], params.back_color[1], params.back_color[2]);
+  background(params.back_color);
   randomSeed(params.random_seed);
   push();
   rotate(params.whole_rotation);
@@ -85,7 +83,8 @@ function renderCircles()
     for (j = 0; j <= int(width / (params.circle_size + params.circle_distance) +1); j = j+1) 
     {
       push();
-      fill (params.circle_color[0] + random(-params.color_offset, params.color_offset), params.circle_color[1] + random(-params.color_offset, params.color_offset), params.circle_color[2]+ random(-params.color_offset, params.color_offset));
+      //fill (params.circle_color[0] + random(-params.color_offset, params.color_offset), params.circle_color[1] + random(-params.color_offset, params.color_offset), params.circle_color[2]+ random(-params.color_offset, params.color_offset));
+      fill(params.circle_color);
       var offset = (params.stagger) ? (i % 2) : 0;
       var vertical_offset = (params.stagger) ? 0.866025: 1;
       
