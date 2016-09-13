@@ -1,25 +1,28 @@
 
 var gui;
+var mainGraphics, outputGraphics;
 
 function setup() {
 	noStroke();
 	createCanvas(windowWidth, windowHeight);
-  frameRate(5);
-
+  mainGraphics = createGraphics(windowWidth,windowHeight);
+  //frameRate(5);  
   params = new patternParameters();
   gui = new dat.GUI();
   initGui();
 
-	renderCircles();
+	renderCircles(mainGraphics);
 }
 
 function draw() 
 {
-	renderCircles();
+	renderCircles(mainGraphics);
   textSize(32);
   fill(255, 255, 255);
-  text(str(params.circle_color), 10, 30);
-  text(str(params.back_color), 10, 90);
+  image(mainGraphics,0,0);
+  //Some debug text
+  //text(str(params.circle_color), 10, 30);
+  //text(str(params.piece_shape), 10, 90);
 }
 
 //Features to add
@@ -49,9 +52,13 @@ var patternParameters = function()
   this.whole_rotation = 0;
 
   this.random_seed = 1000;
+  this.piece_shape = 'circle';
   this.save = function()
   {
-    this.circle_size = 300;
+    outputGraphics = createGraphics(floor(params.circle_size + params.circle_distance), floor((params.circle_size + params.circle_distance ) *2 *0.866025));
+    renderCircles(outputGraphics);
+    save(outputGraphics, 'dots.png');
+    
   }
 }
 
@@ -72,31 +79,35 @@ function colorToColorArray(inputColor)
 
 
 
-function renderCircles()
-{
-  background(params.back_color);
+function renderCircles(gp)
+{  
+  gp.background(params.back_color);
+  gp.rectMode(CENTER);
+  gp.angleMode(DEGREES);
+  gp.noStroke();
   randomSeed(params.random_seed);
-  push();
-  rotate(params.whole_rotation);
-  for (i = 0; i <= int(width / (params.circle_size + params.circle_distance) + 1); i = i+1)
+  gp.push();
+  gp.rotate(params.whole_rotation);
+  gp.translate(0, -params.circle_size *0.52);
+  for (i = 0; i <= int(gp.height / (params.circle_size + params.circle_distance) + 4); i = i+1)
   {
-    for (j = 0; j <= int(width / (params.circle_size + params.circle_distance) +1); j = j+1) 
+    for (j = 0; j <= int(gp.width / (params.circle_size + params.circle_distance) + 3); j = j+1) 
     {
-      push();
+      gp.push();
       //fill (params.circle_color[0] + random(-params.color_offset, params.color_offset), params.circle_color[1] + random(-params.color_offset, params.color_offset), params.circle_color[2]+ random(-params.color_offset, params.color_offset));
-      fill(params.circle_color);
+      gp.fill(params.circle_color);
       var offset = (params.stagger) ? (i % 2) : 0;
       var vertical_offset = (params.stagger) ? 0.866025: 1;
       
-      translate((j - (offset/2.0)) * (params.circle_size + params.circle_distance)+ random(-params.position_offset, params.position_offset), i * (params.circle_size + (params.circle_distance)) * (vertical_offset) + random(-params.position_offset, params.position_offset));
-      rotate(params.piece_rotation);
+      gp.translate((j - (offset/2.0)) * (params.circle_size + params.circle_distance)+ random(-params.position_offset, params.position_offset), i * (params.circle_size + (params.circle_distance)) * (vertical_offset) + random(-params.position_offset, params.position_offset));
+      gp.rotate(params.piece_rotation);
       var scaled_circle_size = Math.max(params.circle_size + random(-params.size_offset * params.circle_size, params.size_offset * params.circle_size) , 10);
-      ellipse(0,0, scaled_circle_size/1.0, scaled_circle_size/1.0,5);
+      gp.ellipse(0,0, scaled_circle_size/1.0, scaled_circle_size/1.0,5);
       
-      pop();
+      gp.pop();
     }
   }
-  pop();
+  gp.pop();    
 }
 
 
@@ -120,6 +131,9 @@ var initGui = function() {
   var f1 = gui.addFolder('Pattern Parameters');
   f1.add(params, 'circle_size',10,300);
   f1.add(params, 'circle_distance',0,300);
+  f1.add(params, 'whole_rotation', 0,90);
+  f1.add(params, 'piece_rotation', 0,90);
+  f1.add(params, 'piece_shape', { King: 'A', Queen: 'B', Rook: 'C' });
   f1.add(params, 'stagger'); 
   f1.add(params, 'save'); 
   
