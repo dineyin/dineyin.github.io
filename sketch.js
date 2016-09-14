@@ -6,7 +6,6 @@ function setup() {
 	noStroke();
 	createCanvas(windowWidth, windowHeight);
   mainGraphics = createGraphics(windowWidth,windowHeight);
-  //frameRate(5);  
   params = new patternParameters();
   gui = new dat.GUI();
   initGui();
@@ -52,7 +51,7 @@ var patternParameters = function()
   this.whole_rotation = 0;
 
   this.random_seed = 1000;
-  this.piece_shape = 'circle';
+  this.piece_shape = 'Circle';
   this.save = function()
   {
     outputGraphics = createGraphics(floor(params.circle_size + params.circle_distance), floor((params.circle_size + params.circle_distance ) *2 *0.866025));
@@ -94,15 +93,35 @@ function renderCircles(gp)
     for (j = 0; j <= int(gp.width / (params.circle_size + params.circle_distance) + 3); j = j+1) 
     {
       gp.push();
-      //fill (params.circle_color[0] + random(-params.color_offset, params.color_offset), params.circle_color[1] + random(-params.color_offset, params.color_offset), params.circle_color[2]+ random(-params.color_offset, params.color_offset));
-      gp.fill(params.circle_color);
+      var fillColor = color(params.circle_color);
+      gp.fill(red(fillColor) + random(-params.color_offset, params.color_offset), green(fillColor) + random(-params.color_offset, params.color_offset), blue(fillColor) + random(-params.color_offset, params.color_offset));
       var offset = (params.stagger) ? (i % 2) : 0;
       var vertical_offset = (params.stagger) ? 0.866025: 1;
       
       gp.translate((j - (offset/2.0)) * (params.circle_size + params.circle_distance)+ random(-params.position_offset, params.position_offset), i * (params.circle_size + (params.circle_distance)) * (vertical_offset) + random(-params.position_offset, params.position_offset));
       gp.rotate(params.piece_rotation);
       var scaled_circle_size = Math.max(params.circle_size + random(-params.size_offset * params.circle_size, params.size_offset * params.circle_size) , 10);
-      gp.ellipse(0,0, scaled_circle_size/1.0, scaled_circle_size/1.0,5);
+      switch (params.piece_shape)
+      {        
+        case 'Square':
+          gp.rect(0,0, scaled_circle_size/1.0, scaled_circle_size/1.0);
+          break;
+        case 'RSquare':
+          gp.rect(0,0, scaled_circle_size/1.0, scaled_circle_size/1.0, scaled_circle_size/5.0);
+          break;
+        case 'Cross':
+          gp.rect(0,0, scaled_circle_size/1.0, scaled_circle_size/3.0);
+          gp.rect(0,0, scaled_circle_size/3.0, scaled_circle_size/1.0);
+          break;
+        case 'Star':
+          star(0,0, scaled_circle_size/1.8, scaled_circle_size/4.0,5,gp);
+          break;
+        case 'Circle':
+        default:
+          gp.ellipse(0,0, scaled_circle_size/1.0, scaled_circle_size/1.0);
+          break
+      }
+      
       
       gp.pop();
     }
@@ -110,21 +129,19 @@ function renderCircles(gp)
   gp.pop();    
 }
 
-
-
-function star(x,  y,  radius1, radius2,npoints) {
+function star(x,  y,  radius1, radius2, npoints, gp) {
   var angle = TWO_PI / npoints;
   var halfAngle = angle/2.0;
-  beginShape();
+  gp.beginShape();
   for (a = 0; a < TWO_PI; a += angle) {
     var sx = x + cos(a) * radius2;
     var sy = y + sin(a) * radius2;
-    vertex(sx, sy);
+    gp.vertex(sx, sy);
     sx = x + cos(a+halfAngle) * radius1;
     sy = y + sin(a+halfAngle) * radius1;
-    vertex(sx, sy);
+    gp.vertex(sx, sy);
   }
-  endShape(CLOSE);
+  gp.endShape(CLOSE);
 }
 
 var initGui = function() {
@@ -133,7 +150,7 @@ var initGui = function() {
   f1.add(params, 'circle_distance',0,300);
   f1.add(params, 'whole_rotation', 0,90);
   f1.add(params, 'piece_rotation', 0,90);
-  f1.add(params, 'piece_shape', { King: 'A', Queen: 'B', Rook: 'C' });
+  f1.add(params, 'piece_shape', { Circle: 'Circle', Square: 'Square', RoundedSquare: 'RSquare', Star: 'Star' , Cross: 'Cross'});
   f1.add(params, 'stagger'); 
   f1.add(params, 'save'); 
   
