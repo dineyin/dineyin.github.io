@@ -113,8 +113,11 @@ function renderCircles(gp)
           gp.rect(0,0, scaled_circle_size/1.0, scaled_circle_size/3.0);
           gp.rect(0,0, scaled_circle_size/3.0, scaled_circle_size/1.0);
           break;
-        case 'Star':
+        case 'Star5':
           star(0,0, scaled_circle_size/1.8, scaled_circle_size/4.0,5,gp);
+          break;
+		case 'Star4' :
+		  star(0,0, scaled_circle_size/1.8, scaled_circle_size/6.0,4,gp);
           break;
         case 'Circle':
         default:
@@ -150,7 +153,7 @@ var initGui = function() {
   f1.add(params, 'circle_distance',0,300);
   f1.add(params, 'whole_rotation', 0,90);
   f1.add(params, 'piece_rotation', 0,90);
-  f1.add(params, 'piece_shape', { Circle: 'Circle', Square: 'Square', RoundedSquare: 'RSquare', Star: 'Star' , Cross: 'Cross'});
+  f1.add(params, 'piece_shape', { Circle: 'Circle', Square: 'Square', RoundedSquare: 'RSquare', Star_5: 'Star5' , Star_4: 'Star4' , Cross: 'Cross'});
   f1.add(params, 'stagger'); 
   f1.add(params, 'save'); 
   
